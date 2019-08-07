@@ -3,11 +3,11 @@
 /**
  * Module dependencies.
  */
-
+const MongoClient = require('mongodb').MongoClient;
 var app = require('../app');
 var debug = require('debug')('myvoice:server');
 var http = require('http');
-
+const db = require('../config/db')
 /**
  * Get port from environment and store in Express.
  */
@@ -20,15 +20,29 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
-
 /**
  * Listen on provided port, on all network interfaces.
- */
-
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
-
+ */console.log('url 0----',db.url)
+MongoClient.connect(db.url, function(err, client) {
+  if (err) 
+    { 
+      console.warn('found errors--------')
+      return console.log(err);
+    }
+  console.log('connected to mongo db server-------------')
+  const database = client.db("test")
+  // database.collection('data')
+  email_collection = database.collection('email_details')
+  // const note = { text: "this is email text", title: "email title"}; 
+  // email_collection.insert(note, (err, results) => {console.log('result---',results)})
+  require('../routes')(app, database);
+  console.log(database)
+  server.listen(port);
+  server.on('error', onError);
+  server.on('listening', onListening);
+  // perform actions on the collection object
+  client.close();
+});
 /**
  * Normalize a port into a number, string, or false.
  */
@@ -88,3 +102,5 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+
+// module.exports =  collection

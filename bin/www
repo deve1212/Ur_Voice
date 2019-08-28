@@ -11,6 +11,7 @@ const db = require('../config/db')
 
  * Get port from environment and store in Express.
  */
+/* initialized db */
 db.init().then((db_object)=>{
 console.log('<<----dbobject-------->>>>',db_object)
 })
